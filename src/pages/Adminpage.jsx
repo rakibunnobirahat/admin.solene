@@ -269,7 +269,7 @@ const Adminpage = () => {
             <aside className="w-full md:w-64 bg-white border-b md:border-b-0 md:border-r border-gray-200/60 flex flex-col shrink-0">
                 {/* Brand Logo & Meta */}
                 <div className="p-6 border-b border-gray-100 flex flex-row justify-start items-center gap-3 w-60">
-                    <img src="logo/logoicon.svg" className='w-[30%]' alt="logo" />
+                    <img src="logo/logoicon.svg" className='w-[25%]' alt="logo" />
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight font-serif text-primary">Solène</h1>
                         <p className="text-[10px] text-text-muted font-semibold tracking-widest uppercase">Med Spa Admin</p>
