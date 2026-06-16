@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Kaisei Opti", serif;
+  --font-sans: "Inter", sans-serif;
+  --font-icon: 'Material Symbols Outlined';
+
+  --color-primary: #4A6352;
+  --color-primary-hover: #3a4f40;
+  --color-bg-cream: #F8F9F3;
+  --color-text-dark: #1F2924;
+  --color-text-muted: #5B6A60;
+  --color-accent: #E9F0CC;
+  --color-white: #FFFFFF;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-cream);
+  color: var(--color-text-dark);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif);
+}
+
+.font-icon {
+  font-family: var(--font-icon);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
