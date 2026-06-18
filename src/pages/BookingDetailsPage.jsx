@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getBooking, updateBookingStatus } from '../api/bookings';
 
@@ -16,6 +16,31 @@ const BookingDetailsPage = () => {
     const [status, setStatus] = useState('');
     const [updating, setUpdating] = useState(false);
     const [updateMessage, setUpdateMessage] = useState(null);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    // Status options config
+    const statusOptions = [
+        { value: 'Booked', label: 'Booked', icon: 'pending_actions', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200', ring: 'ring-amber-200' },
+        { value: 'Confirmed', label: 'Confirmed', icon: 'check_circle', color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200', ring: 'ring-green-200' },
+        { value: 'Completed', label: 'Completed', icon: 'verified', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200', ring: 'ring-blue-200' },
+        { value: 'Cancelled', label: 'Cancelled', icon: 'cancel', color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', ring: 'ring-red-200' },
+        { value: 'Missed', label: 'Missed', icon: 'event_busy', color: 'text-gray-500', bg: 'bg-gray-50', border: 'border-gray-200', ring: 'ring-gray-200' }
+    ];
+
+    const getStatusOption = (val) => statusOptions.find(o => o.value === val) || statusOptions[0];
+    const currentOption = getStatusOption(status);
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const fetchBookingDetails = async () => {
         setLoading(true);
@@ -218,19 +243,70 @@ const BookingDetailsPage = () => {
                         </div>
 
                         <form onSubmit={handleStatusUpdateSubmit} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                            <div className="relative flex-1">
-                                <select
-                                    value={status}
-                                    onChange={(e) => setStatus(e.target.value)}
-                                    className="w-full appearance-none p-3.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 text-text-dark bg-white text-xs font-semibold cursor-pointer"
+                            {/* Custom Dropdown */}
+                            <div className="relative flex-1" ref={dropdownRef}>
+                                {/* Trigger Button */}
+                                <button
+                                    type="button"
+                                    onClick={() => setDropdownOpen(prev => !prev)}
+                                    className={`w-full flex items-center justify-between gap-3 p-3.5 border rounded-xl bg-white text-xs font-semibold cursor-pointer transition-all duration-200 ${dropdownOpen
+                                        ? `ring-2 ${currentOption.ring} ${currentOption.border}`
+                                        : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                                    }`}
                                 >
-                                    <option value="Booked">Booked</option>
-                                    <option value="Confirmed">Confirmed</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="Cancelled">Cancelled</option>
-                                    <option value="Missed">Missed</option>
-                                </select>
-                                <span className="font-icon absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">unfold_more</span>
+                                    <div className="flex items-center gap-2.5">
+                                        <span className={`w-7 h-7 rounded-lg ${currentOption.bg} ${currentOption.border} border flex items-center justify-center`}>
+                                            <span className={`font-icon text-sm ${currentOption.color}`}>{currentOption.icon}</span>
+                                        </span>
+                                        <span className="text-text-dark font-bold text-sm">{currentOption.label}</span>
+                                        {status !== booking.status && (
+                                            <span className="text-[9px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded-md uppercase tracking-wider">Changed</span>
+                                        )}
+                                    </div>
+                                    <span className={`font-icon text-gray-400 text-lg transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}>expand_more</span>
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                {dropdownOpen && (
+                                    <div className="absolute z-50 top-full left-0 right-0 mt-2 bg-white border border-gray-200/80 rounded-2xl shadow-lg shadow-black/8 overflow-hidden animate-fade-in">
+                                        <div className="p-1.5">
+                                            {statusOptions.map((opt) => {
+                                                const isSelected = status === opt.value;
+                                                const isCurrent = booking.status === opt.value;
+                                                return (
+                                                    <button
+                                                        key={opt.value}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setStatus(opt.value);
+                                                            setDropdownOpen(false);
+                                                        }}
+                                                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150 cursor-pointer group ${
+                                                            isSelected
+                                                                ? `${opt.bg} ${opt.border} border`
+                                                                : 'border border-transparent hover:bg-gray-50'
+                                                        }`}
+                                                    >
+                                                        <span className={`w-7 h-7 rounded-lg ${opt.bg} border ${opt.border} flex items-center justify-center transition-colors`}>
+                                                            <span className={`font-icon text-sm ${opt.color} transition-colors`}>{opt.icon}</span>
+                                                        </span>
+                                                        <div className="flex-1">
+                                                            <span className={`text-sm font-semibold ${isSelected ? 'text-text-dark' : 'text-text-dark/80'}`}>{opt.label}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5">
+                                                            {isCurrent && (
+                                                                <span className="text-[9px] font-bold text-text-muted bg-gray-100 px-1.5 py-0.5 rounded-md uppercase tracking-wider">Current</span>
+                                                            )}
+                                                            {isSelected && (
+                                                                <span className={`font-icon text-sm ${opt.color}`}>check</span>
+                                                            )}
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <button
