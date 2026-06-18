@@ -268,7 +268,7 @@ const BookingDetailsPage = () => {
 
                                 {/* Dropdown Menu */}
                                 {dropdownOpen && (
-                                    <div className="absolute z-50 top-full left-0 right-0 mt-2 bg-white border border-gray-200/80 rounded-2xl shadow-lg shadow-black/8 overflow-hidden animate-fade-in">
+                                    <div className="absolute z-50 bottom-full left-0 right-0 mb-2 bg-white border border-gray-200/80 rounded-2xl shadow-lg shadow-black/8 overflow-hidden animate-fade-in">
                                         <div className="p-1.5">
                                             {statusOptions.map((opt) => {
                                                 const isSelected = status === opt.value;
