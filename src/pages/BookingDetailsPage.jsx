@@ -111,7 +111,7 @@ const BookingDetailsPage = () => {
                 {/* Back Button Link */}
                 <button
                     onClick={() => navigate('/')}
-                    className="inline-flex items-center gap-2 text-xs font-bold text-text-muted hover:text-text-dark hover:translate-x-[-2px] transition-all cursor-pointer"
+                    className="inline-flex items-center gap-2 text-xs font-bold text-text-muted hover:text-text-dark hover:-translate-x-0.5 transition-all cursor-pointer"
                 >
                     <span className="font-icon text-sm">arrow_back</span>
                     Back to Admin Console
@@ -119,7 +119,7 @@ const BookingDetailsPage = () => {
 
                 {/* Main Card */}
                 <div className="bg-white border border-gray-200/50 rounded-3xl shadow-sm p-6 md:p-10 space-y-8 animate-fade-in">
-                    
+
                     {/* Header */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
                         <div className="space-y-1">
@@ -128,8 +128,7 @@ const BookingDetailsPage = () => {
                                 {getDisplayName(booking)}
                             </h2>
                         </div>
-                        <span className={`px-4 py-1.5 rounded-full text-xs font-bold border self-start sm:self-center tracking-wider uppercase ${
-                            booking.status === 'Confirmed'
+                        <span className={`px-4 py-1.5 rounded-full text-xs font-bold border self-start sm:self-center tracking-wider uppercase ${booking.status === 'Confirmed'
                                 ? 'bg-green-50 text-green-700 border-green-200'
                                 : booking.status === 'Completed'
                                     ? 'bg-blue-50 text-blue-700 border-blue-200'
@@ -138,7 +137,7 @@ const BookingDetailsPage = () => {
                                         : booking.status === 'Missed'
                                             ? 'bg-gray-100 text-gray-600 border-gray-200'
                                             : 'bg-amber-50 text-amber-700 border-amber-200'
-                        }`}>
+                            }`}>
                             {booking.status}
                         </span>
                     </div>
@@ -148,7 +147,7 @@ const BookingDetailsPage = () => {
                         {/* Left Column: Treatment & Time */}
                         <div className="space-y-6">
                             <h3 className="text-xs font-bold text-primary uppercase tracking-wider border-b border-gray-50 pb-2">Treatment Details</h3>
-                            
+
                             <div className="space-y-4">
                                 <div className="space-y-0.5">
                                     <span className="text-[10px] font-semibold text-text-muted uppercase">Service / Treatment</span>
@@ -244,11 +243,10 @@ const BookingDetailsPage = () => {
                         </form>
 
                         {updateMessage && (
-                            <div className={`p-3.5 rounded-xl text-xs font-semibold border flex items-center gap-2 animate-fade-in ${
-                                updateMessage.type === 'success'
+                            <div className={`p-3.5 rounded-xl text-xs font-semibold border flex items-center gap-2 animate-fade-in ${updateMessage.type === 'success'
                                     ? 'bg-green-50 text-green-800 border-green-200'
                                     : 'bg-red-50 text-red-800 border-red-200'
-                            }`}>
+                                }`}>
                                 <span className="font-icon text-sm shrink-0">
                                     {updateMessage.type === 'success' ? 'check_circle' : 'error'}
                                 </span>

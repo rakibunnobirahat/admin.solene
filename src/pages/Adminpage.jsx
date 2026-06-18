@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getBookings, updateBookingStatus } from '../api/bookings';
 import { getTreatments, addTreatment, deleteTreatment } from '../api/treatments';
 
@@ -454,7 +455,7 @@ const Adminpage = () => {
                                                 <div key={b._id} className="py-3 flex items-center justify-between gap-4 first:pt-0 last:pb-0 hover:bg-gray-50/50 px-2 rounded-xl transition-colors">
                                                     <div className="space-y-0.5">
                                                         <div className="flex items-center gap-2">
-                                                            <span className="text-sm font-semibold text-text-dark">{getDisplayName(b)}</span>
+                                                            <Link to={`/booking/${b._id}`} className="text-sm font-semibold text-text-dark hover:text-primary hover:underline transition-colors">{getDisplayName(b)}</Link>
                                                             <span className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold ${b.status === 'Confirmed'
                                                                 ? 'bg-green-50 text-green-700'
                                                                 : 'bg-amber-50 text-amber-700'
@@ -621,7 +622,7 @@ const Adminpage = () => {
                                             {/* Left details pane */}
                                             <div className="space-y-1 flex-1">
                                                 <div className="flex items-center gap-2.5 flex-wrap">
-                                                    <span className="font-bold text-text-dark text-base">{getDisplayName(b)}</span>
+                                                    <Link to={`/booking/${b._id}`} className="font-bold text-text-dark text-base hover:text-primary hover:underline transition-colors">{getDisplayName(b)}</Link>
                                                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wider uppercase ${b.status === 'Confirmed'
                                                         ? 'bg-green-50 text-green-700 border border-green-150'
                                                         : b.status === 'Completed'
@@ -658,6 +659,13 @@ const Adminpage = () => {
                                                         "{b.notes}"
                                                     </div>
                                                 )}
+                                                <Link
+                                                    to={`/booking/${b._id}`}
+                                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-primary hover:text-primary-hover hover:underline transition-colors mt-1"
+                                                >
+                                                    <span className="font-icon text-xs">visibility</span>
+                                                    View Full Details
+                                                </Link>
                                             </div>
 
                                             {/* Right action controls */}
