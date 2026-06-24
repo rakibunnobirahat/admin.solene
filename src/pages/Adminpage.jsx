@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getBookings, updateBookingStatus } from '../api/bookings';
 import { getTreatments, addTreatment, deleteTreatment } from '../api/treatments';
+import { useAuth } from '../context/AuthContext';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -35,6 +36,8 @@ const parsePrice = (price) => {
 };
 
 const Adminpage = () => {
+    const { user, logout } = useAuth();
+
     // Navigation tab state
     const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard', 'bookings', 'treatments'
 
@@ -380,6 +383,21 @@ const Adminpage = () => {
                                 {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                             </span>
                         </div>
+
+                        {/* Signed-in admin + logout */}
+                        {user?.email && (
+                            <div className="text-right hidden md:block">
+                                <span className="text-[10px] font-bold text-text-muted uppercase block">Signed in</span>
+                                <span className="text-sm font-semibold text-text-dark">{user.email}</span>
+                            </div>
+                        )}
+                        <button
+                            onClick={logout}
+                            className="p-3 bg-white hover:bg-red-50 border border-gray-200 hover:border-red-200 text-text-muted hover:text-red-600 rounded-xl transition-all shadow-sm cursor-pointer hover:shadow"
+                            title="Sign out"
+                        >
+                            <span className="font-icon text-lg block leading-none">logout</span>
+                        </button>
                     </div>
                 </div>
 

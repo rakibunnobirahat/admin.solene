@@ -1,6 +1,7 @@
 /**
  * API client methods for booking management.
  */
+import { authHeaders, handleUnauthorized } from './auth';
 
 export const getBookings = async (API_BASE_URL) => {
     try {
@@ -8,9 +9,11 @@ export const getBookings = async (API_BASE_URL) => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                ...authHeaders(),
             }
         });
 
+        if (response.status === 401) handleUnauthorized();
         if (!response.ok) {
             throw new Error(`GET request failed! Status: ${response.status}`);
         }
@@ -50,10 +53,12 @@ export const updateBookingStatus = async (API_BASE_URL, id, status, extraFields 
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
+                ...authHeaders(),
             },
             body: JSON.stringify({ status, ...extraFields })
         });
 
+        if (response.status === 401) handleUnauthorized();
         if (!response.ok) {
             const errResult = await response.json().catch(() => ({ error: 'Unknown server error' }));
             throw new Error(errResult.error || `PATCH request failed! Status: ${response.status}`);
@@ -72,9 +77,11 @@ export const getBooking = async (API_BASE_URL, id) => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                ...authHeaders(),
             }
         });
 
+        if (response.status === 401) handleUnauthorized();
         if (!response.ok) {
             const errResult = await response.json().catch(() => ({ error: 'Unknown server error' }));
             throw new Error(errResult.error || `GET request failed! Status: ${response.status}`);

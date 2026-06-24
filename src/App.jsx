@@ -2,12 +2,29 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Adminpage from './pages/Adminpage';
 import BookingDetailsPage from './pages/BookingDetailsPage';
+import LoginPage from './pages/LoginPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<Adminpage />} />
-      <Route path="/booking/:id" element={<BookingDetailsPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Adminpage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/booking/:id"
+        element={
+          <ProtectedRoute>
+            <BookingDetailsPage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   )
 }
