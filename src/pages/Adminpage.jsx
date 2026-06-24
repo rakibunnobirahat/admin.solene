@@ -226,6 +226,14 @@ const Adminpage = () => {
         let total = 0;
         const paidBookings = bookings.filter(b => b.status === 'Confirmed' || b.status === 'Completed');
         paidBookings.forEach(booking => {
+            if (booking.price) {
+                const priceVal = parseFloat(booking.price.replace(/[^0-9.]/g, ''));
+                if (!isNaN(priceVal)) {
+                    total += priceVal;
+                    return;
+                }
+            }
+            // Fallback for legacy bookings
             const treatment = treatments.find(t => t.name.toLowerCase().trim() === booking.treatment.toLowerCase().trim());
             if (treatment && treatment.price) {
                 const priceVal = parseFloat(treatment.price.replace(/[^0-9.]/g, ''));
@@ -471,7 +479,7 @@ const Adminpage = () => {
                                                             </span>
                                                             <span className="flex items-center gap-0.5">
                                                                 <span className="font-icon text-xs">schedule</span>
-                                                                {b.time} ({b.duration})
+                                                                {b.time} ({b.duration} • {b.price || 'Contact for pricing'})
                                                             </span>
                                                         </div>
                                                     </div>
@@ -637,6 +645,9 @@ const Adminpage = () => {
                                                     </span>
                                                     <span className="text-[10px] font-semibold text-text-muted bg-gray-50 border border-gray-200 px-2 py-0.5 rounded-full">
                                                         Duration: {b.duration}
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-primary bg-primary/5 border border-primary/10 px-2 py-0.5 rounded-full">
+                                                        {b.price || 'Contact for pricing'}
                                                     </span>
                                                 </div>
                                                 <div className="text-sm font-bold text-primary">{b.treatment}</div>

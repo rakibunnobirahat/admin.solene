@@ -180,6 +180,11 @@ const BookingDetailsPage = () => {
                                 </div>
 
                                 <div className="space-y-0.5">
+                                    <span className="text-[10px] font-semibold text-text-muted uppercase">Price</span>
+                                    <p className="text-sm font-semibold">{booking.price || 'Contact for pricing'}</p>
+                                </div>
+
+                                <div className="space-y-0.5">
                                     <span className="text-[10px] font-semibold text-text-muted uppercase">Duration</span>
                                     <p className="text-sm font-semibold">{booking.duration}</p>
                                 </div>
