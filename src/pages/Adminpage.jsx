@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getBookings, updateBookingStatus } from '../api/bookings';
 import { getTreatments, addTreatment, deleteTreatment } from '../api/treatments';
@@ -26,6 +26,12 @@ const getNextSevenDays = () => {
         });
     }
     return days;
+};
+
+// Safely parse a price that may be a number, a "$180" string, or missing
+const parsePrice = (price) => {
+    if (price === null || price === undefined) return NaN;
+    return parseFloat(String(price).replace(/[^0-9.]/g, ''));
 };
 
 const Adminpage = () => {
@@ -186,7 +192,7 @@ const Adminpage = () => {
 
     // Search and filter for bookings list
     const filteredBookings = bookings.filter(b => {
-        const matchesStatus = filter === 'All' || b.status.toLowerCase() === filter.toLowerCase();
+        const matchesStatus = filter === 'All' || (b.status || '').toLowerCase() === filter.toLowerCase();
 
         const fullName = getDisplayName(b).toLowerCase();
         const email = (b.email || '').toLowerCase();
@@ -221,31 +227,29 @@ const Adminpage = () => {
         return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     };
 
-    // Dashboard calculations
-    const getEstimatedRevenue = () => {
+    // Dashboard calculations (memoized so they don't recompute on every render)
+    const estimatedRevenue = useMemo(() => {
         let total = 0;
         const paidBookings = bookings.filter(b => b.status === 'Confirmed' || b.status === 'Completed');
         paidBookings.forEach(booking => {
-            if (booking.price) {
-                const priceVal = parseFloat(booking.price.replace(/[^0-9.]/g, ''));
-                if (!isNaN(priceVal)) {
-                    total += priceVal;
-                    return;
-                }
+            const priceVal = parsePrice(booking.price);
+            if (!isNaN(priceVal)) {
+                total += priceVal;
+                return;
             }
             // Fallback for legacy bookings
-            const treatment = treatments.find(t => t.name.toLowerCase().trim() === booking.treatment.toLowerCase().trim());
-            if (treatment && treatment.price) {
-                const priceVal = parseFloat(treatment.price.replace(/[^0-9.]/g, ''));
-                if (!isNaN(priceVal)) {
-                    total += priceVal;
-                }
+            const treatment = treatments.find(t =>
+                (t.name || '').toLowerCase().trim() === (booking.treatment || '').toLowerCase().trim()
+            );
+            const fallbackVal = parsePrice(treatment?.price);
+            if (!isNaN(fallbackVal)) {
+                total += fallbackVal;
             }
         });
         return total;
-    };
+    }, [bookings, treatments]);
 
-    const getPopularTreatments = () => {
+    const popularTreatments = useMemo(() => {
         const countsMap = {};
         bookings.forEach(b => {
             if (b.treatment) {
@@ -254,23 +258,25 @@ const Adminpage = () => {
         });
         return Object.entries(countsMap)
             .map(([name, count]) => {
-                const treatment = treatments.find(t => t.name.toLowerCase().trim() === name.toLowerCase().trim());
+                const treatment = treatments.find(t =>
+                    (t.name || '').toLowerCase().trim() === name.toLowerCase().trim()
+                );
                 return { name, count, price: treatment?.price || '' };
             })
             .sort((a, b) => b.count - a.count)
             .slice(0, 5);
-    };
+    }, [bookings, treatments]);
 
-    const getUpcomingBookings = () => {
+    const upcomingBookings = useMemo(() => {
         const todayStr = new Date().toISOString().split('T')[0];
         return [...bookings]
-            .filter(b => (b.status === 'Booked' || b.status === 'Confirmed') && b.date >= todayStr)
+            .filter(b => (b.status === 'Booked' || b.status === 'Confirmed') && b.date && b.date >= todayStr)
             .sort((a, b) => {
-                if (a.date !== b.date) return a.date.localeCompare(b.date);
-                return a.time.localeCompare(b.time);
+                if (a.date !== b.date) return (a.date || '').localeCompare(b.date || '');
+                return (a.time || '').localeCompare(b.time || '');
             })
             .slice(0, 5);
-    };
+    }, [bookings]);
 
     return (
         <div className="min-h-screen flex flex-col md:flex-row bg-bg-cream font-sans antialiased text-text-dark">
@@ -426,7 +432,7 @@ const Adminpage = () => {
                                     <span className="font-icon text-2xl text-primary mb-3 block">payments</span>
                                     <span className="text-xs font-bold text-text-muted uppercase tracking-wider block">Est. Revenue</span>
                                     <span className="text-2xl md:text-3xl font-extrabold text-primary mt-1 block">
-                                        {bookingsLoading || treatmentsLoading ? '$...' : `$${getEstimatedRevenue().toLocaleString()}`}
+                                        {bookingsLoading || treatmentsLoading ? '$...' : `$${estimatedRevenue.toLocaleString()}`}
                                     </span>
                                 </div>
                             </div>
@@ -453,13 +459,13 @@ const Adminpage = () => {
                                             <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
                                             <p className="text-xs text-text-muted">Loading appointments...</p>
                                         </div>
-                                    ) : getUpcomingBookings().length === 0 ? (
+                                    ) : upcomingBookings.length === 0 ? (
                                         <div className="text-center text-xs text-text-muted py-12 border border-dashed border-gray-100 rounded-xl">
                                             No upcoming bookings found for today or the future.
                                         </div>
                                     ) : (
                                         <div className="divide-y divide-gray-100">
-                                            {getUpcomingBookings().map(b => (
+                                            {upcomingBookings.map(b => (
                                                 <div key={b._id} className="py-3 flex items-center justify-between gap-4 first:pt-0 last:pb-0 hover:bg-gray-50/50 px-2 rounded-xl transition-colors">
                                                     <div className="space-y-0.5">
                                                         <div className="flex items-center gap-2">
