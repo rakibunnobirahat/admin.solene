@@ -284,7 +284,7 @@ const Adminpage = () => {
             <aside className="w-full md:w-64 bg-white border-b md:border-b-0 md:border-r border-gray-200/60 flex flex-col shrink-0">
                 {/* Brand Logo & Meta */}
                 <div className="p-6 border-b border-gray-100 flex flex-row justify-start items-center gap-3 w-60">
-                    <img src="logo/logoicon.svg" className='w-[25%]' alt="logo" />
+                    <img src="/logo/logoicon.svg" className='w-[25%]' alt="logo" />
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight font-serif text-primary">Solène</h1>
                         <p className="text-[10px] text-text-muted font-semibold tracking-widest uppercase">Med Spa Admin</p>
@@ -543,13 +543,12 @@ const Adminpage = () => {
                                         </h3>
                                         {bookingsLoading ? (
                                             <div className="py-4 text-center text-xs text-text-muted">Loading trends...</div>
-                                        ) : getPopularTreatments().length === 0 ? (
+                                        ) : popularTreatments.length === 0 ? (
                                             <div className="py-4 text-center text-xs text-text-muted">No data available</div>
                                         ) : (
                                             <div className="space-y-3">
-                                                {getPopularTreatments().map((t, index) => {
-                                                    const popular = getPopularTreatments();
-                                                    const maxCount = popular[0]?.count || 1;
+                                                {popularTreatments.map((t, index) => {
+                                                    const maxCount = popularTreatments[0]?.count || 1;
                                                     const barWidth = Math.max(10, Math.round((t.count / maxCount) * 100));
                                                     return (
                                                         <div key={t.name} className="space-y-1">
