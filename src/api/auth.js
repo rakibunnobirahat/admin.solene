@@ -48,6 +48,24 @@ export const handleUnauthorized = () => {
 };
 
 /**
+ * Create a new admin account. Requires the secret setup key configured on the
+ * server (ADMIN_SETUP_KEY) — without it the server refuses. Does not log in.
+ */
+export const register = async (API_BASE_URL, email, password, setupKey) => {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, setupKey })
+    });
+
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(result.error || `Registration failed (status ${response.status})`);
+    }
+    return result;
+};
+
+/**
  * Exchange email + password for a JWT. Stores the session on success.
  */
 export const login = async (API_BASE_URL, email, password) => {
